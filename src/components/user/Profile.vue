@@ -32,9 +32,9 @@
       <router-link to="/" class="router" >
       <v-btn @click="exiting()"  color="error">LOGOUT NOW</v-btn>
       </router-link>
-     <h2> Hello, {{student.firstName}} welcome to OUC_ZIM students fund</h2>
+     <h2> Hello, {{student.firstName}}</h2>
       <a class="danger" v-if="student.payment===0">Please pay your subscriptions due, to activate your account!!!</a>
-      <h5 v-if="student.payment===0"><a>Only active member can view more details about the ZIM_OUC fund, your name does not exist in OUC_ZIM fund system</a></h5>
+      <h5 v-if="student.payment===0"><a>Only active member can view more details about the fund, your name does not exist in OUC_ZIM fund system</a></h5>
       <h4 v-if="student.payment > 0" class="pt-2">Your total Subscriptions Balance is  ¥{{student.payment}}</h4>
       <!-- <h3 v-if="student.payment > 0" class="pt-2">Current total fund balance is ¥{{student.payment}}</h3> -->
       <h4 v-if="student.payment > 0" class="pt-2"><a>Month(s) Subscribed: </a>{{student.payment/30}}<a v-if="student.payment===1"> month</a>  <a v-else> months</a> only</h4>

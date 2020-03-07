@@ -1,41 +1,43 @@
 <template>
 <div>
-
-
-  <div v-if="!status || status ===0 || !students">
+   <div  v-if="!status || status ===0 || status!==200 && status!==401">
+     <v-parallax
+    class="parallax"
+     height="100%"
+    dark
+    src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
+  >
+  <div class="text-center err">
   <h1>{{errorStatement}}</h1>
-  <h3 class="warning">{{head}}</h3>
-  <h5 class="danger">check your network connection and click the button below!!!</h5>
+  <h3 class="warning ">{{head}}</h3>
+  <h5 class="red--text">Check your network connection !!!</h5>
   <v-progress-linear
       color="red lighten-2"
       buffer-value="0"
       stream
     ></v-progress-linear> <br/>
     <router-link to="/">
-          <v-btn @click="refresh()" rounded color="white--text primary">Login Again</v-btn>
+          <v-btn @click="refresh()" rounded color="white--text primary">Login</v-btn>
     </router-link>
-
+    </div>
+     </v-parallax>
   </div>
   <Error v-if="status===401"/>
-
-
-    <v-row v-if="status===200 || students"
+    <v-row 
       align="center"
       justify="center"
     >
       <v-col class="text-center" cols="12">
         <!-- <Profile /> -->
       
-  
-
  </v-col>
-      <v-col class="text-center" cols="12">
+      <!-- <v-col class="text-center" cols="12">
         <Profile />
-      </v-col>
+      </v-col> -->
     </v-row>
   
-<div class="students" >
-    <h1 class="subheading grey--text">Students</h1>
+<div class="students" v-if="students || status===200 " >
+    <!-- <h1 class="subheading grey--text">ADMIN</h1> -->
 
      <div>
     <!-- <v-breadcrumbs :items="items">
@@ -45,23 +47,26 @@
     </v-breadcrumbs> -->
   </div>
 
-
- <div class="text-center">
-    <v-btn rounded color="lighten-2 white--text primary mr-3 mx-0 mb-3" light
-   
-    >STUDENT REGISTER ONLY ACCESSED BY ADMINS</v-btn>
+ <div class="text-center" v-if="students && status !==0 && status!==401">
+   <h1 class="subheading primary--text">ADMIN PAGE</h1>
+   <router-link
+    to="/"
+    >
+    <v-btn class="button" @click="exiting" rounded  color="white--text primary"
+    >LOGOUT</v-btn>
+   </router-link>
   </div>
 
-     <v-simple-table fixed-header height="300px">
+     <v-simple-table fixed-header height="300px" v-if="students" >
     <template v-slot:default>
       <thead>
         <tr>
-          <th class="text-left">First Name</th>
+          <th class="text-left red--text">First Name</th>
           <!-- <th class="text-left">Last Name</th> -->
-          <th class="text-left">Student_ID</th>
+          <th class="text-left red--text">Student_ID</th>
           <!-- <th class="text-left">Major</th> -->
-          <th class="text-left">Total amt paid</th>
-          <th class="text-left">Topup</th>
+          <th class="text-left red--text">Total amt paid</th>
+          <th class="text-left red--text">Topup</th>
 
         </tr>
       </thead>
@@ -94,17 +99,17 @@
             +120
           </v-btn>
       </v-col>
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="3" v-if="student.payment>=30">
         <v-btn class="mx-0" fab dark color="indigo" @click="subtractThirty(student.id)">
             -30
           </v-btn>
       </v-col>
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="3" v-if="student.payment>=120">
         <v-btn class="mx-0" fab dark color="indigo" @click="subtractBig(student.id)">
             -120
           </v-btn>
       </v-col>
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="3" v-if="student.payment>=360">
         <v-btn class="mx-0" fab dark color="indigo" @click="reset(student.id)">
             Reset
           </v-btn>
@@ -172,11 +177,15 @@ export default {
   },
   mounted() {
    const students = JSON.parse(localStorage.getItem('students'));
+   this.$store.state.students = students;
    if(students){
      this.$store.state.status = 200;
      console.log(students);
-     
    } 
+   setTimeout(()=>{
+     this.$store.state.errorStatement = '';
+     this.$store.state.head='OOPS! SOMETHING WENT WRONG.'
+   },5000);
    const socket = openSocket('https://fundapi.herokuapp.com');
     socket.on('addition',data=>{
       if(data.action === 'payment'){
@@ -202,6 +211,20 @@ export default {
     
   },
   methods: {
+    exiting(){
+      localStorage.removeItem('studentNum');
+      this.$store.state.token = null;
+      this.$store.state.isAuth = false;
+      this.$store.state.studentNumber = 'BK';
+      localStorage.clear();
+      // localStorage.removeItem('token');
+      // localStorage.removeItem('expiryDate');
+      // localStorage.removeItem('userId');
+      // localStorage.removeItem('studentNum');
+      this.$store.state.student = null;
+      console.log(`exiting token now ${this.$store.state.token}`);
+      
+    },
     refresh(){
              this.$store.state.status = null;
          },
@@ -310,10 +333,17 @@ export default {
    padding:20px;
  }
   .parallax {
-   min-height: 99vh !important;
+   min-height: 110vh !important;
+   min-width: 105vw;
+   padding: -2rem;
+   margin-left: -5rem;
 }
 
-/* .error{
-  margin-top: 20vh;
-} */
+.button{
+  margin-bottom: 2rem;
+}
+
+.err{
+  margin: 20vh 10vw;
+}
  </style>

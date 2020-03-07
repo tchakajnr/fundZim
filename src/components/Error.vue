@@ -8,7 +8,7 @@
                 </div>
                 <div class="text-center signout pb-10">
                     <router-link to="/">
-                        <v-btn @click="refresh()" rounded color="white--text primary">LogIn Again</v-btn>
+                        <v-btn @click="refresh()" rounded color="white--text primary">LogIn</v-btn>
                     </router-link>
                 </div>
             </v-card>

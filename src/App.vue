@@ -72,7 +72,7 @@ export default {
     
       console.log(this.$store.state.studentNumber);
       ////to here
-  
+
       
       console.log(`token iri ${token}`);
       
@@ -96,3 +96,6 @@ export default {
   }
 };
 </script>
+<style>
+
+</style>
